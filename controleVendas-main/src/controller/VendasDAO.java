@@ -30,11 +30,15 @@ public class VendasDAO {
        this.con = Conexao.conectar();
     }
     
+    //Cadastrar Venda
+    
      public void cadastrarVenda(Vendas obj) {
             
          try {
               String sql = "insert into tb_vendas (cliente_id, data_venda, total_venda,observacoes)  values (?,?,?,?)";
                  
+               //2 passo - conectar o banco de dados e organizar o comando sql
+              
                 PreparedStatement stmt = con.prepareStatement(sql);
                 
                 stmt.setString(1, obj.getCliente().getId);
@@ -51,6 +55,8 @@ public class VendasDAO {
         }
 
     }
+     
+      //Retorna a ultima venda
      
      public int retornaUltimaVenda() throws SQLException{
          try{
@@ -80,9 +86,11 @@ public class VendasDAO {
          
      }
      
+      //Metodo que filtra Vendas por Datas
+     
      public List <Vendas> listarVendasPorPeriodo(LocalDate data_inicio, LocalDate data_fim) {
          try{
-             // 1 uma lista
+             // 1 passo - uma lista
              List<Vendas> lista = new ArrayList<>();
              // 2 passo - criar o sql 
              String sql = "select v.id, date_format(v.data_venda, '%d/%m/%Y') as data_formatada, c.nome, v.total_venda, v.observacoes from tb_vendas as v" 

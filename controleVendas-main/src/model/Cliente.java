@@ -6,7 +6,7 @@ package model;
 
 /**
  *
- * @author clebe
+ * @author
  */
 public class Cliente {
     //Atributos

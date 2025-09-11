@@ -21,7 +21,7 @@ import view.Frmmenu;
 
 /**
  *
- * @author Cleber Feitosa
+ * @author
  */
 public class FuncionarioDAO {
 

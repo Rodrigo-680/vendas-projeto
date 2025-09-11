@@ -6,26 +6,35 @@
 package view;
 
 
+import controller.ClienteDAO;
+import controller.ProdutoDAO;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import model.Cliente;
+import model.Produto;
 
 /**
  *
  * @author
  */
 public class FrmVendas extends javax.swing.JFrame {
-
     
+    Cliente obj = new Cliente();
+    double total,preço,subtotal;
+    int qtd;
+    
+ 
+
+    DefaultTableModel carrinho;
     
 
     public FrmVendas() {
@@ -161,6 +170,11 @@ public class FrmVendas extends javax.swing.JFrame {
             ex.printStackTrace();
         }
         txtcpf.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtcpf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtcpfActionPerformed(evt);
+            }
+        });
         txtcpf.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 txtcpfKeyPressed(evt);
@@ -439,14 +453,25 @@ public class FrmVendas extends javax.swing.JFrame {
 
     private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
 
+        //Carrega a data atual do sistema
+        
+        Date agora = new Date();
+        SimpleDateFormat dataBr = new SimpleDateFormat("dd/MM/yyyy");
+        String dataformatada = dataBr.format(agora);
+        txtdataatual.setText(dataformatada);
         
 
 
     }//GEN-LAST:event_formWindowActivated
 
     private void btnpagamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnpagamentoActionPerformed
-       
-
+        FrmPagamentos tela = new FrmPagamentos();
+        
+        tela.txttotal.setText(String.valueOf(total));
+        
+        tela.setVisible(true);
+        
+        dispose();
     }//GEN-LAST:event_btnpagamentoActionPerformed
 
     private void btncancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btncancelarActionPerformed
@@ -464,7 +489,9 @@ public class FrmVendas extends javax.swing.JFrame {
     }//GEN-LAST:event_txtdataatualActionPerformed
 
     private void txtcodigoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcodigoActionPerformed
-        // TODO add your handling code here:
+       // Busca Produto por Codigo
+       
+       
     }//GEN-LAST:event_txtcodigoActionPerformed
 
     private void txtdescricaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtdescricaoActionPerformed
@@ -480,16 +507,49 @@ public class FrmVendas extends javax.swing.JFrame {
     }//GEN-LAST:event_txtqtdActionPerformed
 
     private void btnaddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnaddActionPerformed
-        
+         // botao add item
+         
+         qtd = Integer.parseInt(txtqtd.getText());
+         preço = Double.parseDouble(txtpreco.getText());
+         
+         subtotal = qtd * preço;
+         
+         total += subtotal;
+         
+         txttotal.setText(String.valueOf(total));
+         
+         //Adicionar o produto no carrinho 
+         
+         carrinho =(DefaultTableModel) tabelaItens.getModel();
+         
+         
+         carrinho.addRow(new Object[]{
+         txtcodigo.getText(),
+         txtdescricao.getText(),
+         txtqtd.getText(),
+         txtpreco.getText(),
+         subtotal
+         });
       
     }//GEN-LAST:event_btnaddActionPerformed
 
     private void btnbuscaclienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnbuscaclienteActionPerformed
 
+        ClienteDAO dao = new ClienteDAO();
+        obj = dao.buscaporcpf(txtcpf.getText());
+        
+        txtnome.setText(obj.getNome());
+        
     }//GEN-LAST:event_btnbuscaclienteActionPerformed
 
     private void txtbuscaprodutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbuscaprodutoActionPerformed
+       Produto obj = new Produto();
+       ProdutoDAO dao = new ProdutoDAO();
        
+       obj = dao.buscaPorCodigo(Integer.parseInt(txtcodigo.getText()));
+       
+       txtdescricao.setText(obj.getDescricao());
+       txtpreco.setText(String.valueOf(obj.getPreco()));
     }//GEN-LAST:event_txtbuscaprodutoActionPerformed
 
     private void txttotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txttotalActionPerformed
@@ -497,14 +557,39 @@ public class FrmVendas extends javax.swing.JFrame {
     }//GEN-LAST:event_txttotalActionPerformed
 
     private void txtcpfKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcpfKeyPressed
-        
+      // busca cliente por cpf
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+
+            ClienteDAO dao = new ClienteDAO();
+
+            obj = dao.buscaporcpf(txtcpf.getText());
+
+            txtnome.setText(obj.getNome());
+
+        }  
 
     }//GEN-LAST:event_txtcpfKeyPressed
 
     private void txtcodigoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtcodigoKeyPressed
         
+        // Busca Produto por Codigo 
+        
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            Produto obj = new Produto();
+            ProdutoDAO dao = new ProdutoDAO();
+
+            obj = dao.buscaPorCodigo(Integer.parseInt(txtcodigo.getText()));
+
+            txtdescricao.setText(obj.getDescricao());
+            txtpreco.setText(String.valueOf(obj.getPreco()));
+
+        }
         
     }//GEN-LAST:event_txtcodigoKeyPressed
+
+    private void txtcpfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtcpfActionPerformed
+        
+    }//GEN-LAST:event_txtcpfActionPerformed
 
     /**
      * @param args the command line arguments
